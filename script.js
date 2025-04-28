@@ -1796,8 +1796,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 aiStatusElement.className = 'ai-status loading';
                 aiStatusElement.textContent = `Processing with ${aiModels[currentModelIndex].name}...`;
 
-                const formattedPrompt = `You are simulating a formal interview setting. Respond in a **professional**, **clear**, and **concise** tone. Format your response exactly like an interview answer and also answer as you are saying to the interviewer and also bold some sentences which are much needed to stress out. Question: "${transcription}"`;
+                // const formattedPrompt = `You are simulating a formal interview setting. Respond in a **professional**, **clear**, and **concise** tone. Format your response exactly like an interview answer and also answer as you are saying to the interviewer and also bold some sentences which are much needed to stress out. Question: "${transcription}"`;
+                   const formattedPrompt = `
+You are simulating a formal interview setting. Respond in a **professional**, **clear**, and **concise** tone. Format your response exactly like an interview answer and answer as if you are directly speaking to the interviewer, maintaining a formal and confident tone. **Bold key sentences** where emphasis is important.
 
+If the user asks for code or if you decide to write code:
+- First, explain the **approach in exactly 3 concise bullet points**.
+- Then, write the **code with each line commented properly**.
+- Include both the **function implementation and the main execution**.
+- At the end, clearly mention the **Time Complexity** and **Space Complexity**.
+
+Question: "\${transcription}"
                 const response = await puter.ai.chat(
                     formattedPrompt,
                     {
