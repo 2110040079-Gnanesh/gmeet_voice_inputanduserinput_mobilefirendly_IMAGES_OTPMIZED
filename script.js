@@ -189,9 +189,15 @@ document.addEventListener('DOMContentLoaded', function () {
     let audioStream = null;
     let autoProcessTimer = null;
     let transcriptionHistory = [];
-    let previousTranscriptions = new Set();
     let processedTranscripts = new Set();
     const MAX_IMAGES = 7;
+
+    // Audio permission state tracking
+    let hasAudioPermission = false;
+    
+    // Track the last transcript to detect duplicates
+    let lastTranscriptTimestamp = 0;
+    let lastTranscriptText = '';
 
     // Puter cloud storage paths
     const PUTER_STORAGE_DIR = 'voice_transcriptions';
@@ -521,9 +527,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 if (event.results[i].isFinal) {
                     // Check if this transcript has already been processed to prevent duplicates
-                    if (!processedTranscripts.has(currentTranscript.trim())) {
+                    const currentTimestamp = new Date().getTime();
+                    if (currentTranscript.trim() !== lastTranscriptText || currentTimestamp - lastTranscriptTimestamp > 1000) {
                         finalTranscript += currentTranscript + ' ';
-                        processedTranscripts.add(currentTranscript.trim());
+                        lastTranscriptText = currentTranscript.trim();
+                        lastTranscriptTimestamp = currentTimestamp;
                     }
                 } else {
                     // For interim results, just show the current one
@@ -584,6 +592,49 @@ document.addEventListener('DOMContentLoaded', function () {
     } else {
         statusElement.textContent = 'Speech recognition not supported in this browser.';
         startRecordButton.disabled = true;
+    }
+
+    // Add permissions handling for audio to avoid repeated permission requests
+    async function requestAudioPermission() {
+        // If we already have permission, return immediately
+        if (hasAudioPermission) {
+            return true;
+        }
+        
+        try {
+            // Try to access microphone to trigger permission dialog
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            
+            // If we get here, permission was granted
+            hasAudioPermission = true;
+            
+            // Store permission state in local storage to remember across sessions
+            localStorage.setItem('hasAudioPermission', 'true');
+            
+            // Stop the test stream since we don't need it anymore
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+            
+            return true;
+        } catch (error) {
+            console.error('Audio permission error:', error);
+            hasAudioPermission = false;
+            
+            // If permission was explicitly denied
+            if (error.name === 'NotAllowedError') {
+                statusElement.textContent = 'Microphone access denied. Please enable microphone access in your browser settings.';
+            } else {
+                statusElement.textContent = 'Error accessing microphone: ' + error.message;
+            }
+            
+            return false;
+        }
+    }
+    
+    // Check for stored audio permission state on startup
+    if (localStorage.getItem('hasAudioPermission') === 'true') {
+        hasAudioPermission = true;
     }
 
     // Initialize Puter cloud storage when page loads
@@ -1410,13 +1461,24 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Standard mode functions
-    function startRecording() {
+    async function startRecording() {
         try {
+            // First check if we have audio permission, request it only once if needed
+            const hasPermission = await requestAudioPermission();
+            if (!hasPermission) {
+                statusElement.textContent = 'Microphone access is required for voice recognition';
+                return;
+            }
+            
             // Clear tracking of previous transcriptions on new recording session
             processedTranscripts = new Set();
+            lastTranscriptText = '';
+            lastTranscriptTimestamp = 0;
+            
             // Set recognition start time
             recognitionStartTime = new Date().getTime();
             recognition.start();
+            
             console.log("Recognition started");
             isRecording = true; // Explicitly set to true when starting
         } catch (error) {
