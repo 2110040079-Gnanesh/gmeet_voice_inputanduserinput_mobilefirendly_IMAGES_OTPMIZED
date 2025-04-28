@@ -833,7 +833,7 @@ body.standard-mode {
 .streaming-response.interview-answer {
     background-color: var(--editor-bg);
     color: var(--editor-text);
-    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     padding: 20px;
     border-radius: 8px;
     line-height: 1.8;
@@ -841,21 +841,34 @@ body.standard-mode {
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+/* Remove excessive background styling for paragraphs */
 .streaming-response.interview-answer p {
-    background-color: rgba(74, 158, 255, 0.05);
-    padding: 8px 12px;
-    border-radius: 4px;
     margin-bottom: 12px;
-    border-left: 3px solid var(--primary-color);
+    padding: 4px 0;
 }
 
+/* Only style strong/bold elements distinctly */
 .streaming-response.interview-answer strong,
 .streaming-response.interview-answer b {
     color: var(--primary-light);
     font-weight: 600;
-    background-color: rgba(74, 158, 255, 0.1);
-    padding: 2px 6px;
+}
+
+/* Maintain code block styling for clarity */
+.streaming-response.interview-answer code {
+    background-color: #2d2d2d;
+    padding: 2px 5px;
     border-radius: 3px;
+    color: #ce9178;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+/* Style list items more simply */
+.streaming-response.interview-answer li {
+    color: var(--editor-text);
+    margin-bottom: 8px;
+    list-style-type: disc;
+    padding-left: 5px;
 }
 
 /* Unified styles for code languages on data load */
@@ -1341,7 +1354,7 @@ pre[data-language]::before {
 .streaming-response.interview-answer {
     background-color: var(--editor-bg);
     color: var(--editor-text);
-    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     padding: 20px;
     border-radius: 8px;
     line-height: 1.8;
@@ -1355,7 +1368,7 @@ pre[data-language]::before {
 .streaming-response.interview-answer p,
 .streaming-response.interview-answer ul,
 .streaming-response.interview-answer ol {
-    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: var(--editor-text);
     margin-bottom: 12px;
 }
@@ -1365,9 +1378,6 @@ pre[data-language]::before {
 .streaming-response.interview-answer b {
     color: var(--primary-light);
     font-weight: 600;
-    background-color: rgba(74, 158, 255, 0.1);
-    padding: 2px 6px;
-    border-radius: 3px;
 }
 
 /* Style inline code */
@@ -1382,16 +1392,8 @@ pre[data-language]::before {
 .streaming-response.interview-answer li {
     color: var(--editor-text);
     margin-bottom: 8px;
-    list-style-type: none;
-    position: relative;
-    padding-left: 20px;
-}
-
-.streaming-response.interview-answer li::before {
-    content: "•";
-    color: var(--primary-light);
-    position: absolute;
-    left: 0;
+    list-style-type: disc;
+    padding-left: 5px;
 }
 
 /* Style links */
@@ -1412,7 +1414,7 @@ pre[data-language]::before {
     color: var(--primary-light);
     margin-top: 20px;
     margin-bottom: 10px;
-    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 /* Style blockquotes */
